@@ -1,7 +1,8 @@
 package org.coderead;
 
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.TypeReference;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.coderead.model.Invoice;
 import org.coderead.model.Play;
 
@@ -29,10 +30,12 @@ public class Main {
             "{\"playId\":\"othello\",\"audience\":40}" +
             "]" +
             "}]";
-    public static void main(String[] args) {
-        TypeReference<Map<String, Play>> typeReference = new TypeReference<Map<String, Play>>(){};
-        Map<String, Play> playMap = JSONObject.parseObject(plays, typeReference);
-        List<Invoice> invoiceList = JSONObject.parseArray(invoices, Invoice.class);
+
+    public static void main(String[] args) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        TypeReference<Map<String, Play>> typeReference = new TypeReference<Map<String, Play>>() {};
+        Map<String, Play> playMap = mapper.readValue(plays, typeReference);
+        List<Invoice> invoiceList = mapper.readValue(invoices, new TypeReference<List<Invoice>>() {});
         for (Invoice invoice : invoiceList) {
             Statement statement = new Statement(invoice, playMap);
             String result = statement.show();
